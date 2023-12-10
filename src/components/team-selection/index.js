@@ -14,31 +14,72 @@ export default function TeamSelection() {
 	const [noWk, setNoWK] = React.useState(0);
 
 	const addPlayer = (index) => {
+		var selectedPlayerType = players[index].type;
+		if(selectedPlayerType === "Batsman" && noBat  >= 6 )
+		{
+			alert('Batsmen can not be more than 6');
+			return;
+		}
+		if(selectedPlayerType === "Bowler" && noBowl >= 6)
+		{
+			alert('Bowlers can not be more than 6');
+			return;
+		}
+		if(selectedPlayerType === "AllRounder" && noAR >= 4)
+		{
+			alert("All Rounders can not be more than 4");
+			return;
+		}
+		if(selectedPlayerType === "WicketKeeper" && noWk >= 1)
+		{
+			alert("WicketKeeper can not be more than 1");
+			return;
+		}
+		if(selectedPlayers.length   >= 11)
+		{
+			alert("Only 11 players are allowed in a team");
+			return;
+		}
+		var updatedPlayers = [...selectedPlayers, players[index]];
+		setSelectedPlayers(updatedPlayers);		
+		setNoBat(updatedPlayers.filter(x => x.type === "Batsman").length);
+		setNoBowl(updatedPlayers.filter(x => x.type === "Bowler").length);
+		setNoAR(updatedPlayers.filter(x => x.type === "AllRounder").length);
+		setNoWK(updatedPlayers.filter(x => x.type === "WicketKeeper").length);
 		return;
 	};
 
 	const removePlayer = (index) => {
-		return
+		var updatedPlayersList = selectedPlayers.filter(x => x.name !== selectedPlayers[index].name);
+		setSelectedPlayers(updatedPlayersList);
+		setNoBat(updatedPlayersList.filter(x => x.type === "Batsman").length);
+		setNoBowl(updatedPlayersList.filter(x => x.type === "Bowler").length);
+		setNoAR(updatedPlayersList.filter(x => x.type === "AllRounder").length);
+		setNoWK(updatedPlayersList.filter(x => x.type === "WicketKeeper").length);
+		return;
 	};
 
 	const showplayerDetailsCard = (i) => {
+		setIdx(i);
+		setShowPlayerDetail(true)
 		return;
 	};
 
 	const closeCard = () => {
+		setShowPlayerDetail(false);
 		return;
 	};
 
 	return (
 		<div className="mt-50 layout-column justify-content-center align-items-center">
 			<div style={{ display: "flex", width: "80%" }}>
-					<PlayerDetail
+				 	{ showPlayerDetail && <PlayerDetail
 						selectedPlayers={selectedPlayers}
 						i={idx}
 						close={() => closeCard()}
-						index={1}
+						index={idx}
 						addPlayer={(i) => addPlayer(i)}
-					/>
+					/> }
 				<div
 					className="card outlined mt-0"
 					style={{
@@ -63,7 +104,7 @@ export default function TeamSelection() {
 								</tr>
 							</thead>
 							<tbody data-testid="available-players-table-body">
-									<tr>
+								 {welcome &&	<tr>
 										<td data-testid="selection-rules" colSpan="3" className="card pb-20">
 											<p data-testid="close-welcome" style={{textAlign:'right'}} onClick={()=>setWelcome(false)}>X</p>
 											<h3 style={{ textAlign: "center" }}>
@@ -76,7 +117,7 @@ export default function TeamSelection() {
 											<br />
 											1-4 All Rounders are allowed in a team
 										</td>
-									</tr>
+									</tr> }
 										{players.map((player, index) => {
                                     return (
                                         <tr
